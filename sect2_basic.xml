@@ -1,4 +1,41 @@
 <sect1 xmlns="http://docbook.org/ns/docbook"
        xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>2 - basic</title>
+    <sect2>
+        <title>2.1 - install and config</title>
+        <para>源码在http://git-scm.com/download，也可以通过git获取：</para>
+        <programlisting><![CDATA[
+    $ git clone git://git.kernel.org/pub/scm/git/git.git
+        ]]></programlisting>
+        <para>apt和yum中的包名均为git-core，mac os x可通过macports安装（git-core），windows则用<ulink url="http://code.google.com/p/msysgit">msysGit</ulink>安装。</para>
+        <para>git有3级配置文件，系统级的/etc/gitconfig对所有用户有效，用户全局的~/.gitconfig对该用户建立的所有（本地）仓库有效，项目级的.git/config仅对本仓库有效；配置的有效性越广，优先级就越低。可以通过git config命令配置，系统级和用户级分别对应--system和--global选项，不带选项的配置保存在当前仓库.git/config中。</para>
+        <example>
+            <programlisting><![CDATA[
+    $ git config --global user.name 'zjz'
+
+    $ git config --global user.email 'zjz@zhang.com'
+
+    $ git config --global color.ui=true
+
+    $ git config --global core.editor vi
+
+    $ git config --list
+
+    $ git config user.name
+
+    $ git help config
+
+    $ git config --global alias.co checkout
+
+    $ git config --global alias.br branch
+
+    $ git config --global alias.ci commit
+
+    $ git config --global alias.st status
+
+    $ git config --global alias.unstage 'reset HEAD --'
+            ]]></programlisting>
+        </example>
+        <para>git源码中的contrib/completion/git-completion.bash是git的命令行自动完成脚本，如果已安装了bash_completion，则将该脚本复制到其指定的脚本目录即可（mac os x可通过macports安装bash-completion，脚本目录为/opt/local/etc/bash_completion.d/。注意，bash_completion通常需要在.profile或.bashrc中运行bash_completion脚本，测试发现，macports的该脚本（/opt/local/etc/bash_completion）与fink的初始化脚本（/sw/bin/init.sh）冲突，需要在fink的初始化脚本之后运行才能生效）。</para>
+    </sect2>
 </sect1>
