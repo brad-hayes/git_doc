@@ -38,4 +38,29 @@
         </example>
         <para>git源码中的contrib/completion/git-completion.bash是git的命令行自动完成脚本，如果已安装了bash_completion，则将该脚本复制到其指定的脚本目录即可（mac os x可通过macports安装bash-completion，脚本目录为/opt/local/etc/bash_completion.d/。注意，bash_completion通常需要在.profile或.bashrc中运行bash_completion脚本，测试发现，macports的该脚本（/opt/local/etc/bash_completion）与fink的初始化脚本（/sw/bin/init.sh）冲突，需要在fink的初始化脚本之后运行才能生效）。</para>
     </sect2>
+    <sect2>
+        <title>2.2 - update and commit</title>
+        <programlisting><![CDATA[
+    // - 新建仓库（.git），当前目录即为工作目录
+    $ git init
+
+    // - 查看工作目录的状态，包括未更新的改变（changed but not updated），已更新
+    // - 待提交的改变（changes to be commited），以及cache中没有的文件
+    // - （untracked files）
+    $ git status
+
+    // - 将指定文件或目录（在子目录中递归）中的所有文件加入cache，如果文件已在
+    // - cache中，则更新
+    $ git add .
+
+    // - .gitignore中包含被忽略的文件模式列表，匹配的文件不会列为untracked
+    // - files，也不会被加入cache（除非用-f选项强制加入）
+    $ cat .gitignore
+    .gitignore
+    *.tmp
+
+    // - 将cache作为新的快照提交并更新当前分支（指向新版本）
+    $ git commit -m 'initialization'
+        ]]></programlisting>
+    </sect2>
 </sect1>
