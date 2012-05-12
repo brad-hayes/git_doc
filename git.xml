@@ -1,0 +1,5 @@
+<article xmlns="http://docbook.org/ns/docbook"
+         xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>git</title>
+    <xi:include href="sect1_principle.xml" />
+</article>

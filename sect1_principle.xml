@@ -1,0 +1,146 @@
+<sect1 xmlns="http://docbook.org/ns/docbook"
+       xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>1 - principle</title>
+    <sect2>
+        <title>1.1 - object</title>
+        <para>git最底层的机制是内容寻址的文件系统，也就是说，文件地址（path）是由文件内容（的hash(sha-1) key）决定的，git中将这种内容寻址的文件称为（hash）对象。内容寻址保证了相同（不同）内容的对象必定具有相同（不同）的地址。</para>
+        <example>
+            <title>content addressing</title>
+            <programlisting><![CDATA[
+    // - 写入指定内容的文件（对象）
+    $ echo 'test content' | git hash-object -w --stdin
+    d670460b4b4aece5915caf5c68d12f560a9fe3e4
+
+    // - 所有文件（对象）都保存在.git/objects目录下，hash key的前2位为子目录名，
+    // - 其余位为文件名
+    $ find .git/objects -type f
+    .git/objects/d6/70460b4b4aece5915caf5c68d12f560a9fe3e4
+
+    // - 指定hash key即可访问文件（对象）
+    $ git cat-file -p d670
+    test content
+            ]]></programlisting>
+        </example>
+        <para>在底层的内容寻址的文件系统之上，git需要提供按文件名（path）和版本访问的版本化文件系统（称为仓库）以支持版本控制。为此git提供了几种类型的对象，首先是blob，保存文件内容：</para>
+        <example>
+            <title>blob</title>
+            <programlisting><![CDATA[
+    $ echo 'test content' > test
+
+    $ git hash-object -w test
+    d670460b4b4aece5915caf5c68d12f560a9fe3e4
+
+    $ git cat-file -t d670
+    blob
+            ]]></programlisting>
+        </example>
+        <para>blob仅保存文件内容，git提供了tree维护文件名和blob之间的关联。tree可以包含子tree。</para>
+        <example>
+            <title>tree</title>
+            <programlisting><![CDATA[
+    $ git cat-file -p master^{tree}
+    100644 blob a906cb2a4a904a152e80877d4088654daad0c859    README
+    100644 blob 8f94139338f9404f26296befa88755fc2598c289    Rakefile
+    040000 tree 99f1a6d12cb4b6f19c8655fca46c3ecf317074e0    lib
+            ]]></programlisting>
+        </example>
+        <para>一个tree可以看作一个按文件名访问的完整的文件系统，但在git中，它并非根据工作目录而是根据index（.git/index，又称为cache或stage）来构建的。index中包含了一个tree（及其子tree）中的所有文件，包括每个文件的文件名，对应blob的hash key以及文件属性。</para>
+        <example>
+            <title>index and tree</title>
+            <programlisting><![CDATA[
+    $ echo 'test content' > test
+
+    // - 将文件添加到index
+    $ git update-index --add test
+
+    // - blob已构建
+    $ find .git/objects -type f
+    .git/objects/d6/70460b4b4aece5915caf5c68d12f560a9fe3e4
+
+    // - 根据index构建tree
+    $ git write-tree
+    3e69f02f3247843b482cc99872683692999f6703
+
+    $ git cat-file -p 3e69
+    100644 blob d670460b4b4aece5915caf5c68d12f560a9fe3e4	test
+            ]]></programlisting>
+        </example>
+        <para>注意，将文件添加到index或更新即会构建其对应的blob（如果还没有），git write-tree仅构建tree及其子tree。</para>
+        <para>git提供了commit来使文件系统（tree）版本化。</para>
+        <example>
+            <title>commit</title>
+            <programlisting><![CDATA[
+    $ echo 'initialization' | git commit-tree 3e69
+    ed4532b993b4dda2317033ecb687e27f967df3b8
+
+    $ git cat-file -t ed45
+    commit
+
+    $ git cat-file -p ed45
+    tree 3e69f02f3247843b482cc99872683692999f6703
+    author zjz <zjz@zhang.com> 1336754672 +0800
+    committer zjz <zjz@zhang.com> 1336754672 +0800
+    initialization
+            ]]></programlisting>
+        </example>
+        <para>每个commit即为仓库中的一个版本，提交的tree称为快照。除了首次提交之外，后续的提交需要指定其parent commit（由前一次提交构建）；形如：echo 'second commit' | git commit-tree xxxx -p ed45</para>
+        <para>git根据index而不是工作目录来构建tree和commit也许是为了使提交更快捷。工作目录中的文件可以在index中比对hash key来判断文件是否新增，删除，修改，以免每次提交之前都需要遍历整个当前快照（需要多次底层文件操作）；也就是说，index相当于当前快照的可更新的cache（因此又称为stage），更新后即可作为新的快照提交。但如前所述，将文件添加到index或更新即会构建其对应的blob（如果还没有），因此，如果在提交之前某个文件有多次更新，那么每次更新都会构建blob，但只有提交前的最后一次更新对应的blob在新的快照中，其它blob都成为了无法访问的死对象。为避免这种情况，可以每次更新后都提交。</para>
+    </sect2>
+    <sect2>
+        <title>1.2 - reference, branch and tag</title>
+        <para>作为对象，commit同样是内容寻址的，为此，git提供了可以类似于版本号来访问的机制：reference和tag。reference是保存在.git/refs目录下的文件，其中保存了指定commit的hash key（称为引用（指向）指定commit）。</para>
+        <example>
+            <title>reference</title>
+            <programlisting><![CDATA[
+    // - 相当于echo 'ed4532b993b4dda2317033ecb687e27f967df3b8' > .git/refs/heads/master
+    $ git update-ref refs/heads/master ed45
+
+    $ git log --pretty=oneline master
+    ed4532b993b4dda2317033ecb687e27f967df3b8 initialization
+            ]]></programlisting>
+        </example>
+        <para>.git/refs/heads目录下的reference称为分支，git还维护一个特定的指向分支的引用：HEAD（.git/HEAD），HEAD指向的分支称为当前分支。每次提交都需要将当前分支指向的commit作为本次commit的parent commit并更新当前分支指向本次commit（HEAD指向当前分支，当前分支指向当前版本（commit），当前commit指向当前快照）；每次签出（checkout）则需要更新HEAD指向指定分支（使之成为当前分支）。</para>
+        <example>
+            <title>HEAD</title>
+            <programlisting><![CDATA[
+    $ cat .git/HEAD
+    ref: refs/heads/master
+
+    $ git symbolic-ref HEAD
+    refs/heads/master
+
+    $ git symbolic-ref HEAD refs/heads/branch_test
+
+    $ cat .git/HEAD
+    ref: refs/heads/branch_test
+            ]]></programlisting>
+        </example>
+        <para>分支可以看作提交时自动更新的reference，它指向一个不断推进的commit链（commit -> parent commit -> ... -> null，所以称为分支）。tag则是静态的reference，指向固定的commit，类似于版本号；tag位于.git/refs/tags目录下。</para>
+        <example>
+            <title>tag</title>
+            <programlisting><![CDATA[
+    $ git update-ref refs/tags/v1.0 ed45
+
+    $ cat .git/refs/tags/v1.0
+    ed4532b993b4dda2317033ecb687e27f967df3b8
+            ]]></programlisting>
+        </example>
+        <para>还有一种annotated tag，指向tag对象而非commit；tag对象则可以指向任意其它对象。</para>
+        <example>
+            <title>annotated tag</title>
+            <programlisting><![CDATA[
+    $ git tag -a test.bak d670 -m 'blob tag'
+
+    $ cat .git/refs/tags/test.bak 
+    a80886bde3a9ca3b2cae56aacbb3f4a4664cd664
+
+    $ git cat-file -p a808
+    object d670460b4b4aece5915caf5c68d12f560a9fe3e4
+    type blob
+    tag test.bak
+    tagger zjz <zjz@zhang.com> Sat May 12 15:34:31 2012 +0800
+    blob tag
+            ]]></programlisting>
+        </example>
+    </sect2>
+</sect1>
