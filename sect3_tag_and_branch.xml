@@ -26,7 +26,7 @@
     // - （缺省在当前版本）新建分支
     $ git branch test_branch ed45
 
-    // - 切换到指定分支（并签出（到工作目录））
+    // - 切换到指定分支（签出（到工作目录并更新cache））
     $ git checkout test_branch
     // - 如果签出tag，则处于detached HEAD状态（由于tag是静态的，因此HEAD直接指向
     // - 当前版本，而没有当前分支）

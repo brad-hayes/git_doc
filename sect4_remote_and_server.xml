@@ -1,4 +1,36 @@
 <sect1 xmlns="http://docbook.org/ns/docbook"
        xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>4 - remote and server</title>
+    <sect2>
+        <title>4.1 - remote</title>
+        <programlisting><![CDATA[
+    // - clone远程仓库（到本地.git），远程仓库通过名字访问（cloned远程仓库名为
+    // - origin），其中的分支成为本地仓库中的远程分支（远程仓库名/分支名，如
+    // - origin/master，不会被本地操作更新），但远程仓库的当前分支还会成为本地仓
+    // - 库的当前（本地）分支（通常是master）（并签出）
+    $ git clone zjz@128.128.1.9:git/test.git
+    // - 显示远程分支列表
+    $ git branch -r
+
+    // - 显示现有远程仓库列表
+    $ git remote -v
+    // - 添加远程仓库
+    $ git remote add pb git://github.com/paulboone/ticgit.git
+    // - 远程仓库改名
+    $ git remote rename pb paul
+    // - 删除远程仓库
+    $ git remote rm paul
+
+    // - 获取远程仓库（到本地仓库），其中的分支同样成为（或更新）本地仓库的远程
+    // - 分支
+    $ git fetch origin
+    // - 推送指定分支到远程仓库，如果远程仓库中的该分支并非指定分支的祖先（上次
+    // - 获取之后（远程仓库中该分支上）又有新提交），则推送失败，需要重新获取远
+    // - 程仓库，在本地合并后再推送
+    $ git push origin master
+
+    // - 除了合并之外，还可以基于远程分支新建本地分支（称为跟踪分支，clone时新建的当前分支就是一个跟踪分支）；该本地分支会关联（称为跟踪）远程仓库中的对应分支
+    $ git checkout -b local_test_branch origin/test_branch
+        ]]></programlisting>
+    </sect2>
 </sect1>
