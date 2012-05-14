@@ -41,6 +41,11 @@
 
     // - 删除分支
     $ git branch -d test_branch
+
+    // - 将当前分支衍合到指定分支（将当前分支与当前分支和指定分支的共同祖先之间
+    // - 的diff应用到指定分支（仍提交到当前分支，但commit的parent commit为指定分
+    // - 支的当前版本，即指定分支成了当前分支的祖先））
+    $ git rebase master
         ]]></programlisting>
     </sect2>
 </sect1>
