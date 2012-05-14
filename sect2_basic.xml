@@ -50,6 +50,10 @@
     $ git rm -f test
     // - 在cache和工作目录中改名
     $ git mv test test1
+    // - 撤销对cache中文件（未指定则对所有）的最后一次更新
+    $ git reset HEAD test
+    // - 从cache中签出文件（覆盖工作目录中的文件）
+    $ git checkout -- test
 
     // - 工作目录与cache的diff
     $ git diff
@@ -62,7 +66,7 @@
     .gitignore
     *.tmp
 
-    // - 将cache作为新快照提交（到当前分支）
+    // - 将cache作为新快照提交（到当前分支），--amend选项替换当前版本
     $ git commit -m 'initialization'
     // - 更新cache后提交
     $ git commit -a -m '1 - xxx completed'
@@ -71,6 +75,12 @@
     $ git log -p -2
     // - 每次提交显示一行
     $ git log --pretty=oneline
+    // - 指定显示格式，--graph选项显示ascii图形表示的分支合并历史
+    $ git log --pretty=format:"%h: %s" --graph
+    // - 指定查询条件
+    $ git log --pretty=format:"%h: %s" --author=gitster --since="2008-10-01" --before="2008-11-01" --no-merges -- t/
+    // - gui版log
+    $ gitk
         ]]></programlisting>
     </sect2>
 </sect1>
