@@ -3,5 +3,6 @@
     <title>git</title>
     <xi:include href="sect1_principle.xml" />
     <xi:include href="sect2_basic.xml" />
-    <xi:include href="sect3_server.xml" />
+    <xi:include href="sect3_tag_and_branch.xml" />
+    <xi:include href="sect4_remote_and_server.xml" />
 </article>
