@@ -54,6 +54,8 @@
     $ git reset HEAD test
     // - 从cache中签出文件（覆盖工作目录中的文件）
     $ git checkout -- test
+    // - 显示cache中的文件信息列表
+    $ git ls-files --stage
 
     // - 工作目录与cache的diff
     $ git diff

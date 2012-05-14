@@ -1,4 +1,46 @@
 <sect1 xmlns="http://docbook.org/ns/docbook"
        xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>3 - tag and branch</title>
+    <sect2>
+        <title>3.1 - tag</title>
+        <programlisting><![CDATA[
+    // - 显示现有tag列表，可用-l选项指定匹配模式
+    $ git tag -l 'v1.*'
+
+    // - （缺省为当前版本）打tag
+    $ git tag v1.0 ed45
+    // - （缺省为当前版本）打annotated tag，-s选项（代替-a选项）会调用gpg对
+    // - annotated tag签名
+    $ git tag -a v1.1 -m 'version 1.1'
+    // - 调用gpg验证tag的签名（需要有签名者的公钥（在keyring中））
+    $ git tag -v v1.1
+        ]]></programlisting>
+    </sect2>
+    <sect2>
+        <title>3.2 - branch</title>
+        <programlisting><![CDATA[
+    // - 显示现有分支列表，-v选项显示每个分支的当前版本信息，--merged或
+    // --no-merged选项仅显示已或未与当前分支合并的分支
+    $ git branch -v
+
+    // - （缺省在当前版本）新建分支
+    $ git branch test_branch ed45
+
+    // - 切换到指定分支（并签出（到工作目录））
+    $ git checkout test_branch
+    // - 如果签出tag，则处于detached HEAD状态（由于tag是静态的，因此HEAD直接指向
+    // - 当前版本，而没有当前分支）
+    $ git checkout v1.0
+
+    // - 将指定分支合并到当前分支（将分支合并到其祖先分支仅需将祖先分支指向该分
+    // - 支指向的版本，称为fast forward；否则找出它们的共同祖先来进行合并计算，
+    // - 将结果作为新快照提交（合并commit，有2个parent commit）；如果合并失败，
+    // - 则需要手工解决冲突，git status会标明冲突（unmerged）的文件，手工解决冲
+    // - 突之后，需将文件加入cache再提交（同为合并commit））
+    $ git merge test_branch
+
+    // - 删除分支
+    $ git branch -d test_branch
+        ]]></programlisting>
+    </sect2>
 </sect1>
