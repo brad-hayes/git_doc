@@ -10,7 +10,7 @@
     // - 中的分支成为（新建为）本地仓库中的远程分支（远程仓库名/分支名，如
     // - origin/master，不会被本地操作更新），但远程仓库的当前分支还会成为本地仓
     // - 库的当前（本地）分支（通常是master）（并签出）
-    $ git clone zjz@zhang.com:git/test.git
+    $ git clone git@git.svr:repos/test.git
     // - 显示远程分支列表
     $ git branch -r
 
@@ -49,30 +49,57 @@
         ]]></programlisting>
     </sect2>
     <sect2>
-        <title>2 - server</title>
+        <title>4.2 - server</title>
         <programlisting><![CDATA[
-    // - clone纯仓库
+    // - clone纯仓库，基本上相当于复制，即cp -Rf ./.git test.git
     $ git clone --bare . test.git
-    // - 基本上相当于复制
-    $ cp -Rf ./.git test.git
     // - 将纯仓库部署到服务器（通过ssh访问）
-    $ scp -r test.git zjz@zhang.com:git/
+    $ scp -r test.git git@git.svr:repos/
         ]]></programlisting>
         <para>如果使用ssh协议，通常只在服务器新建一个git帐号，并将用户的ssh公钥加入git帐号的~/.ssh/authorized_keys文件，使得所有用户都通过git帐号访问服务器。</para>
         <programlisting><![CDATA[
-    // - 生成ssh密钥（id_rsa）和公钥（id_rsa.pub）
+    // - 用户在本地生成ssh密钥（id_rsa）和公钥（id_rsa.pub）
     $ ssh-keygen
 
-    // - 在服务器端将用户的ssh公钥加入git帐号的~/.ssh/authorized_keys
+    // 管理员在服务器端将用户的ssh公钥加入git帐号的~/.ssh/authorized_keys
+    $ su - git
     $ cat id_rsa.john.pub >> ~/.ssh/authorized_keys
 
-    // 在服务器端新建空的纯仓库，用户即可推送到该远程仓库，或clone，获取，拉取等
+    // 管理员在服务器端新建空的纯仓库，用户即可推送到该远程仓库（以及clone,
+    // fetch, pull等）
+    $ cd ~/repos
     $ mkdir test.git
     $ cd test.git
     $ git --bare init
-    // - 此外还可以用git提供的git-shell代替git帐号的缺省shell（以限制git帐号的操
-    // - 作仅与git有关），形如：
+
+    // - 此外还可以用git提供的git-shell代替git帐号的缺省shell，以限制git帐号的操
+    // - 作仅与git有关，形如：
     git:x:1000:1000::/home/git:/usr/bin/git-shell
+        ]]></programlisting>
+        <para>还可以通过http协议提供匿名只读访问。</para>
+        <programlisting><![CDATA[
+    // 为需要通过http访问的仓库开启post-update hook，当通过ssh向该仓库推送时为通
+    // 过http读取做必要的更新
+    $ cd test.git
+    $ cp hooks/post-update.sample hooks/post-update
+
+    // 管理员在服务端为apache配置一个虚拟主机，注意，用户需要在本地配置dns（如通
+    // 过hosts文件）解析此处配置的虚拟主机的ServerName
+    <VirtualHost *:80>
+        ServerName git.svr
+        DocumentRoot /home/git/repos
+        <Directory /home/git/repos/>
+            Order allow,deny
+            allow from all
+        </Directory>
+    </VirtualHost>
+
+    // - 使得apache可以访问仓库
+    $ chgrp -R www-data /home/git/repos
+
+    // - 管理员在服务器端重启apache后，用户即可在本地通过http访问（clone, fetch,
+    // - pull）
+    $ git clone http://git.svr/test.git
         ]]></programlisting>
     </sect2>
 </sect1>
