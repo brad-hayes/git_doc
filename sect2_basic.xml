@@ -63,6 +63,9 @@
     $ git diff
     // - cache与当前快照的diff
     $ git diff --cached
+    // 也可直接使用commit的hash key
+    $ git diff 9464 0367
+    $ git diff 0367
 
     // - .gitignore中包含被忽略的文件模式列表，匹配的文件不会列为untracked
     // - files，也不会被加入cache（除非用-f选项强制加入）
