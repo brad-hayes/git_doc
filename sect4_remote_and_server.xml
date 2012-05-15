@@ -3,34 +3,49 @@
     <title>4 - remote and server</title>
     <sect2>
         <title>4.1 - remote</title>
+        <para>除了工作目录下的本地仓库，git还支持以多种协议访问远程的仓库，如ssh，http以及git协议等，以便支持协作式的版本管理。注意，git是分布式的，除非要支持git协议，否则不需要git服务器端程序，远程仓库和本地仓库的区别仅仅在于需要通过协议来访问。</para>
         <programlisting><![CDATA[
-    // - clone远程仓库（到本地.git），远程仓库通过名字访问（cloned远程仓库名为
-    // - origin），其中的分支成为本地仓库中的远程分支（远程仓库名/分支名，如
+    // - clone远程仓库（到本地仓库，即指定目录（缺省为当前目录下的git项目名子目
+    // - 录）下的.git），远程仓库可通过名字访问（cloned远程仓库名为origin），其
+    // - 中的分支成为（新建为）本地仓库中的远程分支（远程仓库名/分支名，如
     // - origin/master，不会被本地操作更新），但远程仓库的当前分支还会成为本地仓
     // - 库的当前（本地）分支（通常是master）（并签出）
     $ git clone zjz@128.128.1.9:git/test.git
     // - 显示远程分支列表
     $ git branch -r
 
-    // - 显示现有远程仓库列表
+    // - 显示现有远程仓库名列表
     $ git remote -v
-    // - 添加远程仓库
+    // - 添加远程仓库名
     $ git remote add pb git://github.com/paulboone/ticgit.git
     // - 远程仓库改名
     $ git remote rename pb paul
-    // - 删除远程仓库
+    // - 删除远程仓库名
     $ git remote rm paul
 
     // - 获取远程仓库（到本地仓库），其中的分支同样成为（或更新）本地仓库的远程
     // - 分支
     $ git fetch origin
-    // - 推送指定分支到远程仓库，如果远程仓库中的该分支并非指定分支的祖先（上次
-    // - 获取之后（远程仓库中该分支上）又有新提交），则推送失败，需要重新获取远
-    // - 程仓库，在本地合并后再推送
-    $ git push origin master
+    // - 推送指定分支到远程仓库，如果远程仓库已有同名分支且非指定分支的祖先（上
+    // - 次获取之后（远程仓库中该分支上）又有新提交），则推送失败，需要重新获取
+    // - 远程仓库，在本地合并后再推送
+    $ git push origin local_test_branch
+    // - 指定远程仓库中的目标分支名
+    $ git push origin local_test_branch:test_branch
+    // - 删除远程仓库中的分支
+    $ git push origin :test_branch
+    // 推送tag
+    $ git push origin v1.0
+    $ git push origin --tags
 
-    // - 除了合并之外，还可以基于远程分支新建本地分支（称为跟踪分支，clone时新建的当前分支就是一个跟踪分支）；该本地分支会关联（称为跟踪）远程仓库中的对应分支
+    // 除了合并远程分支之外，还可以基于远程分支新建本地分支（称为跟踪分支，clone
+    // 时新建的当前分支就是一个跟踪分支）
     $ git checkout -b local_test_branch origin/test_branch
+    $ git checkout --track origin/test_branch
+    // - 拉取当前分支跟踪的远程仓库中的分支并合并到当前分支
+    $ git pull
+    // - 推送当前分支到其跟踪的远程仓库中的分支
+    $ git push
         ]]></programlisting>
     </sect2>
 </sect1>

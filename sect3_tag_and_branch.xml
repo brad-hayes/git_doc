@@ -20,7 +20,7 @@
         <title>3.2 - branch</title>
         <programlisting><![CDATA[
     // - 显示现有分支列表，-v选项显示每个分支的当前版本信息，--merged或
-    // --no-merged选项仅显示已或未与当前分支合并的分支
+    // - --no-merged选项仅显示已或未与当前分支合并的分支
     $ git branch -v
 
     // - （缺省在当前版本）新建分支
@@ -46,6 +46,15 @@
     // - 的diff应用到指定分支（仍提交到当前分支，但commit的parent commit为指定分
     // - 支的当前版本，即指定分支成了当前分支的祖先））
     $ git rebase master
+
+    // - 分支间的diff
+    $ git diff master..test_branch
+    // - master与test_branch的最近的共同祖先与test_branch分支间的diff
+    $ git diff master...test_branch
+    // - 工作目录与当前快照的diff（相当于git diff和git diff --cache的集合）
+    $ git diff HEAD
+    // - 工作目录与指定分支的diff
+    $ git diff test_branch
         ]]></programlisting>
     </sect2>
 </sect1>

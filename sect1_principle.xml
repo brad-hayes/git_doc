@@ -21,7 +21,7 @@
     test content
             ]]></programlisting>
         </example>
-        <para>在底层的内容寻址的文件系统之上，git需要提供按文件名（path）和版本访问的版本化文件系统（称为仓库）以支持版本控制。为此git提供了几种类型的对象，首先是blob，保存文件内容：</para>
+        <para>在底层的内容寻址的文件系统之上，git需要提供按文件名（path）和版本访问的版本化文件系统（称为仓库，存储在由git init创建的.git目录中，.git所在的目录则称为工作目录）以支持版本控制。为此git提供了几种类型的对象，首先是blob，保存文件内容：</para>
         <example>
             <title>blob</title>
             <programlisting><![CDATA[

@@ -8,12 +8,14 @@
     $ git clone git://git.kernel.org/pub/scm/git/git.git
         ]]></programlisting>
         <para>apt和yum中的包名均为git-core，mac os x可通过macports安装（git-core），windows则用<ulink url="http://code.google.com/p/msysgit">msysGit</ulink>安装。</para>
-        <para>git有3级配置文件，系统级的/etc/gitconfig对所有用户有效，用户全局的~/.gitconfig对该用户建立的所有（本地）仓库有效，项目级的.git/config仅对本仓库有效；配置的有效性越广，优先级就越低。可以通过git config命令配置，系统级和用户级分别对应--system和--global选项，不带选项的配置保存在当前仓库.git/config中。</para>
+        <para>git有3级配置文件，系统级的/etc/gitconfig对所有用户有效，用户全局的~/.gitconfig仅对该用户有效，.git/config则仅对该仓库有效；配置的有效性越广，优先级就越低。可以通过git config命令配置，系统级和用户级分别对应--system和--global选项，不带选项的配置保存在当前仓库的.git/config中。</para>
         <programlisting><![CDATA[
     $ git config --global user.name 'zjz'
     $ git config --global user.email 'zjz@zhang.com'
     $ git config --global color.ui=true
     $ git config --global core.editor vi
+    // 使得git调用的分页器换行（缺省截断行）
+    $ git config --global core.pager 'less -+$LESS -FRX'
 
     $ git config --list
     $ git config user.name
@@ -57,7 +59,7 @@
     // - 显示cache中的文件信息列表
     $ git ls-files --stage
 
-    // - 工作目录与cache的diff
+    // - 工作目录与cache的diff，还可以指定文件名或目录名
     $ git diff
     // - cache与当前快照的diff
     $ git diff --cached
