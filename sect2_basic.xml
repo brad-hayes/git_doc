@@ -14,7 +14,7 @@
     $ git config --global user.email 'zjz@zhang.com'
     $ git config --global color.ui=true
     $ git config --global core.editor vi
-    // 使得git调用的分页器换行（缺省截断行）
+    // - 使得git调用的分页器换行（缺省截断行）
     $ git config --global core.pager 'less -+$LESS -FRX'
 
     $ git config --list
