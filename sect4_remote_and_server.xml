@@ -10,7 +10,7 @@
     // - 中的分支成为（新建为）本地仓库中的远程分支（远程仓库名/分支名，如
     // - origin/master，不会被本地操作更新），但远程仓库的当前分支还会成为本地仓
     // - 库的当前（本地）分支（通常是master）（并签出）
-    $ git clone zjz@128.128.1.9:git/test.git
+    $ git clone zjz@zhang.com:git/test.git
     // - 显示远程分支列表
     $ git branch -r
 
@@ -46,6 +46,33 @@
     $ git pull
     // - 推送当前分支到其跟踪的远程仓库中的分支
     $ git push
+        ]]></programlisting>
+    </sect2>
+    <sect2>
+        <title>2 - server</title>
+        <programlisting><![CDATA[
+    // - clone纯仓库
+    $ git clone --bare . test.git
+    // - 基本上相当于复制
+    $ cp -Rf ./.git test.git
+    // - 将纯仓库部署到服务器（通过ssh访问）
+    $ scp -r test.git zjz@zhang.com:git/
+        ]]></programlisting>
+        <para>如果使用ssh协议，通常只在服务器新建一个git帐号，并将用户的ssh公钥加入git帐号的~/.ssh/authorized_keys文件，使得所有用户都通过git帐号访问服务器。</para>
+        <programlisting><![CDATA[
+    // - 生成ssh密钥（id_rsa）和公钥（id_rsa.pub）
+    $ ssh-keygen
+
+    // - 在服务器端将用户的ssh公钥加入git帐号的~/.ssh/authorized_keys
+    $ cat id_rsa.john.pub >> ~/.ssh/authorized_keys
+
+    // 在服务器端新建空的纯仓库，用户即可推送到该远程仓库，或clone，获取，拉取等
+    $ mkdir test.git
+    $ cd test.git
+    $ git --bare init
+    // - 此外还可以用git提供的git-shell代替git帐号的缺省shell（以限制git帐号的操
+    // - 作仅与git有关），形如：
+    git:x:1000:1000::/home/git:/usr/bin/git-shell
         ]]></programlisting>
     </sect2>
 </sect1>
