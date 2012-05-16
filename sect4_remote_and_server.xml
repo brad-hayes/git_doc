@@ -10,7 +10,7 @@
     // - 中的分支成为（新建为）本地仓库中的远程分支（远程仓库名/分支名，如
     // - origin/master，不会被本地操作更新），但远程仓库的当前分支还会成为本地仓
     // - 库的当前（本地）分支（通常是master）（并签出）
-    $ git clone git@git.svr:repos/test.git
+    $ git clone git@gitserver:repos/test.git
     // - 显示远程分支列表
     $ git branch -r
 
@@ -54,23 +54,32 @@
     // - clone纯仓库，基本上相当于复制，即cp -Rf ./.git test.git
     $ git clone --bare . test.git
     // - 将纯仓库部署到服务器（通过ssh访问）
-    $ scp -r test.git git@git.svr:repos/
+    $ scp -r test.git git@gitserver:repos/
         ]]></programlisting>
         <para>如果使用ssh协议，通常只在服务器新建一个git帐号，并将用户的ssh公钥加入git帐号的~/.ssh/authorized_keys文件，使得所有用户都通过git帐号访问服务器。</para>
         <programlisting><![CDATA[
     // - 用户在本地生成ssh密钥（id_rsa）和公钥（id_rsa.pub）
-    $ ssh-keygen
+    $ ssh-keygen -t rsa -C "zjz@zhang.com"
 
     // 管理员在服务器端将用户的ssh公钥加入git帐号的~/.ssh/authorized_keys
     $ su - git
-    $ cat id_rsa.john.pub >> ~/.ssh/authorized_keys
+    $ cat id_rsa.zjz.pub >> ~/.ssh/authorized_keys
 
-    // 管理员在服务器端新建空的纯仓库，用户即可推送到该远程仓库（以及clone,
-    // fetch, pull等）
+    // 管理员在服务器端新建空的纯仓库
     $ cd ~/repos
     $ mkdir test.git
     $ cd test.git
-    $ git --bare init
+    $ git init --bare
+    // 用户即可推送到该远程仓库（以及clone, fetch, pull等）
+    $ mkdir test
+    $ cd test
+    $ git init
+    $ touch README
+    $ git add README
+    $ git commit -m 'initialization'
+    $ git remote add origin git@gitserver:repos/test.git
+    // - -u选项推送后即跟踪该分支
+    $ git push -u origin master
 
     // - 此外还可以用git提供的git-shell代替git帐号的缺省shell，以限制git帐号的操
     // - 作仅与git有关，形如：
@@ -86,7 +95,7 @@
     // 管理员在服务端为apache配置一个虚拟主机，注意，用户需要在本地配置dns（如通
     // 过hosts文件）解析此处配置的虚拟主机的ServerName
     <VirtualHost *:80>
-        ServerName git.svr
+        ServerName gitserver
         DocumentRoot /home/git/repos
         <Directory /home/git/repos/>
             Order allow,deny
@@ -99,7 +108,7 @@
 
     // - 管理员在服务器端重启apache后，用户即可在本地通过http访问（clone, fetch,
     // - pull）
-    $ git clone http://git.svr/test.git
+    $ git clone http://gitserver/test.git
         ]]></programlisting>
     </sect2>
 </sect1>
