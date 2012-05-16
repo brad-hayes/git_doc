@@ -55,6 +55,7 @@
     $ git clone --bare . test.git
     // - 将纯仓库部署到服务器（通过ssh访问）
     $ scp -r test.git git@gitserver:repos/
+    $ rm -Rf test.git
         ]]></programlisting>
         <para>如果使用ssh协议，通常只在服务器新建一个git帐号，并将用户的ssh公钥加入git帐号的~/.ssh/authorized_keys文件，使得所有用户都通过git帐号访问服务器。</para>
         <programlisting><![CDATA[
