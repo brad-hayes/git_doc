@@ -39,12 +39,14 @@
     $ git push origin --tags
 
     // 除了合并远程分支之外，还可以基于远程分支新建本地分支（称为跟踪分支，clone
-    // 时新建的当前分支就是一个跟踪分支）
+    // 时新建的当前分支就是一个跟踪分支，在.git/config中有对应的branch节中记录其
+    // 跟踪的远程仓库（remote）和其中的分支（merge））
     $ git checkout -b local_test_branch origin/test_branch
     $ git checkout --track origin/test_branch
     // - 拉取当前分支跟踪的远程仓库中的分支并合并到当前分支
     $ git pull
-    // - 推送当前分支到其跟踪的远程仓库中的分支
+    // - 推送（本地）所有分支到当前分支跟踪的远程仓库，如果没有跟踪，则推送到
+    // - origin
     $ git push
         ]]></programlisting>
     </sect2>
@@ -53,8 +55,10 @@
         <programlisting><![CDATA[
     // - clone纯仓库，基本上相当于复制，即cp -Rf ./.git test.git
     $ git clone --bare . test.git
-    // - 将纯仓库部署到服务器（通过ssh访问）
+    // - 将纯仓库部署到服务器（通过ssh访问），由于还需要手工新建远程分支以及跟
+    // - 踪，因此通常不使用这种方式
     $ scp -r test.git git@gitserver:repos/
+
     $ rm -Rf test.git
         ]]></programlisting>
         <para>如果使用ssh协议，通常只在服务器新建一个git帐号，并将用户的ssh公钥加入git帐号的~/.ssh/authorized_keys文件，使得所有用户都通过git帐号访问服务器。</para>
@@ -79,7 +83,7 @@
     $ git add README
     $ git commit -m 'initialization'
     $ git remote add origin git@gitserver:repos/test.git
-    // - -u选项推送后即跟踪该分支
+    // - -u选项推送后即跟踪该分支（push本身就会自动新建远程分支），是推荐的方式
     $ git push -u origin master
 
     // - 此外还可以用git提供的git-shell代替git帐号的缺省shell，以限制git帐号的操
